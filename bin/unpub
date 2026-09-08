@@ -9,11 +9,11 @@ set -q _flag_vendor_value; and set -l vendor $_flag_vendor_value; or set -l vend
 
 
 for a in $argv
-    for f in (path filter -f $root/vendor_*/$a.fish)
-        set -l target (string replace -r "^$root" "$vendor" $f)
-        # set -s f target >&2
+    for f in (path filter -f $vendor/vendor_*/$a.fish)
+        set -l src (string replace -r "^$vendor" "$root" $f)
+        # set -s f src >&2
         # set -l fish_trace 1
         # FUTURE mcarifio: backup?
-        ln -srfb $f $target
+        [ "$(path resolve $f)" = "$src" ]; and unlink $f 
     end
 end
