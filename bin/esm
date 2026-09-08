@@ -1,8 +1,6 @@
 #!/usr/bin/env -S sudo fish
-set -q SUDO_USER; set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
 # -*- mode: fish -*-
-
-# remember all arguments
+set -q SUDO_USER; and set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
 set -l args $argv
 
 argparse -us -x on,off on\& off\& trace\& -- $argv

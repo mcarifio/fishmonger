@@ -1,19 +1,27 @@
 #!/usr/bin/env fish
 # -*- mode: fish -*-
-
 set -l args $argv
-set -l root (path resolve (status filename)/../..)
+
+set -l root (builtin path resolve (status filename)/../..)
 argparse -us vendor=\& -- $argv
 set -q _flag_vendor_value; and set -l vendor $_flag_vendor_value; or set -l vendor ~/.local/share/fish
 # set -s root vendor >&2
+set -q argv[1]; or set -l argv (builtin path basename --no-extension (builtin path filter -fl $vendor/vendor_*.d/*.fish $vendor/vendor_*.d/*.conf)) | sort | uniq
 
 
+set -f unlinked
 for a in $argv
-    for f in (path filter -f $vendor/vendor_*/$a.fish)
+    set -f hit 0
+    for f in (builtin path filter -f $vendor/vendor_*/$a.fish)
         set -l src (string replace -r "^$vendor" "$root" $f)
         # set -s f src >&2
         # set -l fish_trace 1
         # FUTURE mcarifio: backup?
-        [ "$(path resolve $f)" = "$src" ]; and unlink $f 
+        [ "$(builtin path resolve $f)" = "$src" ]; or continue
+        unlink $f
+        set -f hit 1
     end
+    [ $hit -eq 1 ]; set -af unlinked $a
 end
+printf '%s\n' $unlinked
+

@@ -1,7 +1,7 @@
 function forward -a cmd
-    set -l _cmd (command -sa $cmd)
+    set -l _cmd (command -sa (builtin path basename $cmd))
     if [ (count $_cmd) -gt 1 ]
-        $_cmd[2] $argv
+        echo $_cmd[2]
     else
         echo "No fowarding command for `$_cmd`" >&2
         return 1

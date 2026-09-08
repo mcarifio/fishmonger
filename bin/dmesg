@@ -1,9 +1,11 @@
 #!/usr/bin/env -S sudo fish
-set -q SUDO_USER; set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
 # -*- mode: fish -*-
-
+set -q SUDO_USER; and set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
 set -l args $argv
+
 argparse -us err\& -- $argv; or return
 set -q _flag_err; and set -l level '--level=err,emerg,crit'
 
-forward (command -sa (path basename (status filename))) $argv
+# set -l fish_trace 1
+_cmd=(forward (status filename)) $_cmd --color=always $level $argv | less -R
+

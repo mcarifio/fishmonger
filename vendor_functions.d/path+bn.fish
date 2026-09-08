@@ -4,4 +4,5 @@ function (fname (status filename) pn:string) --no-scope-shadowing
     set -l right (value $argv[3] $left)
     set -l result (string split . (path basename $pn))
     string join . $result[$left..$right]
+    return 0
 end

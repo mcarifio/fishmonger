@@ -1,16 +1,16 @@
 #!/usr/bin/env fish
 # -*- mode: fish -*-
-
 set -l args $argv
-set -l root (path resolve (status filename)/../..)
+
+set -l root (builtin path resolve (status filename)/../..)
 argparse -us vendor=\& -- $argv
 set -q _flag_vendor_value; and set -l vendor $_flag_vendor_value; or set -l vendor ~/.local/share/fish
 # set -s root vendor >&2
-set -q argv[1]; or set -l argv (path basename --no-extension (path filter -fl $vendor/vendor_*/*.fish $vendor/vendor_*/*.conf) | sort | uniq)
+set -q argv[1]; or set -l argv (builtin path basename --no-extension (builtin path filter -fl $vendor/vendor_*.d/*.fish $vendor/vendor_*.d/*.conf)) | sort | uniq
 
 function pubs_pair -a pn
-    for a in $argv; printf '%s -> %s ' $a (path resolve $a); end
+    for a in $argv; printf '\t%s -> %s\n' $a (builtin path resolve $a); end
 end
 
 
-for a in $argv; printf '%s ' $a (pubs_pair (path filter -fl $vendor/vendor_*/$a.*)); echo; end
+for a in $argv; printf '%s\n' $a (pubs_pair (builtin path filter -fl $vendor/vendor_*.d/$a*.fish $vendor/vendor_*.d/$a*.conf)); echo; end

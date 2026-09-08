@@ -5,7 +5,6 @@ function fname -a pathname --no-scope-shadowing
     set -e argv[1]
     argparse -us -- $argv
     
-    functions -q $cmd; or builtin source $cmd.fish
     echo "function $fname:sig; echo $fname $argv_opts $argv; end" | builtin source
     # echo "function $fname.call; argparse -us $(printf '%s\& ' (string sub -s 2 $argv_opts)) -- \$argv; set -s (
     # type $argv[1] $fname.sig >&2

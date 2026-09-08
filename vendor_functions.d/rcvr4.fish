@@ -1,4 +1,5 @@
 function (fname (status filename) cmd:function!'functions -q $cmd' msg:string) -a cmd msg --no-scope-shadowing
+    # set -l fish_trace 1
     set -l cmd (value $cmd msend)
     set -l msg (value $msg receivers)
     set -e argv[1..2]
