@@ -1,0 +1,51 @@
+#!/usr/bin/env -S sudo fish
+set -q SUDO_USER; set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
+# -*- mode: fish -*-
+
+# remember all arguments
+set -l args $argv
+
+argparse -us -x on,off on\& off\& trace\& -- $argv
+# --trace trace this run
+set -q _flag_trace; and set -l fish_trace 1
+# --on re-enable esm; --off disable esm; default is --off
+set -q _flag_on; or set -l _flag_off --off
+
+
+# TODO carif: not quite working
+function divert-gz -a pn
+    dpkg-divert --local --rename --divert "$pn.diverted" "$pn"
+    gzip --verbose "$pn.diverted" >&2
+end
+
+function ungz-undivert -a pn
+    gunzip --verbose $pn >&2
+    set -l diverted (path basename --no-extension $pn)
+    dpkg-divert --local --remove --divert "$diverted" (path basename --no-extension "$diverted")
+end
+
+function esm_on
+    echo -n "turning $(path basename (status filename)) $(status function) ... " >&2
+    command -q pro; and pro config set apt_news=true
+    for pn in /etc/apt/apt.conf.d/*esm*.conf.diverted.gz /etc/apt/apt.conf.d/*pro*.conf.diverted.gz; ungz-undivert "$pn"; end
+    echo "done" >&2
+end
+
+function esm_off
+    echo -n "turning $(path basename (status filename)) $(status function) ... " >&2
+    command -q pro; and pro config set apt_news=false
+    for pn in /etc/apt/apt.conf.d/*esm*.conf /etc/apt/apt.conf.d/*pro*.conf; divert-gz "$pn"; end
+    echo "done" >&2
+end
+
+
+# ignoring .gz multiple times lacks hygene but hurts nothing.
+set -l conf /etc/apt/apt.conf.d/00ignore-diverted
+echo "# created by $(status filename) $args on '$(date)'" > $conf
+printf 'Dir::Ignore-Files-Silently:: "\.%s$";\n' gz diverted >> $conf
+
+
+# --on => esm_on otherwise esm_off
+set -q _flag_on; and esm_on; or esm_off
+
+dpkg-divert --list | string match -re ^local | string match -re '(pro|esm)-.+\.conf' >&2

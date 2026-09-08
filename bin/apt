@@ -1,9 +1,12 @@
 #!/usr/bin/env -S sudo fish
+set -q SUDO_USER; set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
+# -*- mode: fish -*-
 
 set -l args $argv
 set -l _cmd (command -sa (path basename (status filename)))
-$_cmd[2] $argv
-
-
-
-
+if [ (count $_cmd) -gt 1 ]
+    $_cmd[2] $argv
+else
+    echo "no command on PATH to forward `$_cmd`" >&2
+    exit 1
+end
