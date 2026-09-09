@@ -1,13 +1,14 @@
 #!/usr/bin/env fish
+# assumes: brew install ollama
 
-# eget ollama/ollama
-# brew install ollama
+set -l cmd (path basename --no-extension (status filename))
+command? $cmd; or die "$cmd not found"
 
-guard command ollama; or return 0
 set -l models  "$HOME/.config/ollama/models"
-mkdir -p "$models"
+mkdir -p "$models" >&2
 Ux OLLAMA_MODELS="$models"
 
+[ "$(brew --prefix ollama)" = "$(command -s ollama)" ]; and brew services start ollama
 
 
 
