@@ -1,6 +1,12 @@
 #!/usr/bin/env -S sudo fish
 # -*- mode: fish -*-
-set -q SUDO_USER; and set -al fish_function_path ~$SUDO_USER/.local/share/fish/vendor_functions.d
+# FUTURE mcarifio: security sandbox?
+set -p fish_function_path (path resolve (status filename)/../../..)/fish/vendor_functions.d
 set -l args $argv
+
+if contains -- install $argv
+    apt update
+    apt upgrade -y
+end
 
 _cmd=(forward (status filename)) $_cmd $argv

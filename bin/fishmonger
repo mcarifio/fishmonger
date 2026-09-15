@@ -1,0 +1,15 @@
+#!/usr/bin/env fish
+
+# eventually
+#!/usr/bin/env usage fish
+
+
+# add this directory to fish_user_paths
+
+# add ../vendor_functions.d to fish_function_paths
+
+# add ../vendor_completions.d to fish_complete_path
+
+# symlink ../conf.d/fishmonger.fish in $__fish_conf_dir/conf.d
+
+
