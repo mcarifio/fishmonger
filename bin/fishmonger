@@ -3,13 +3,23 @@
 # eventually
 #!/usr/bin/env usage fish
 
+set -l fish_trace 1
+# add this directory (bin) to fish_user_path
+fish_add_path (path resolve (status filename)/..)
 
-# add this directory to fish_user_paths
-
-# add ../vendor_functions.d to fish_function_paths
+# add ../vendor_functions.d to fish_function_path
+set -l vendor_functions_d (path resolve (status filename)/../../vendor_functions.d)
+contains -- $vendor_functions_d $fish_function_path; or set -Uxp fish_function_path $vendor_functions_d
 
 # add ../vendor_completions.d to fish_complete_path
+set -l vendor_completions_d (path resolve (status filename)/../../vendor_completions.d)
+contains -- $vendor_completions_d $fish_complete_path; or set -Uxp fish_complete_path $vendor_completions_d
 
-# symlink ../conf.d/fishmonger.fish in $__fish_conf_dir/conf.d
+# symlink ../conf.d/fishmonger.conf.fish in $__fish_conf_dir/conf.d
+fishmonger.conf
+
+# -Ux variables
+set -Ux VISUAL emacsclient
+set -Ux EDITOR emacsclient
 
 
