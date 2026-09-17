@@ -3,23 +3,64 @@
 # eventually
 #!/usr/bin/env usage fish
 
-set -l fish_trace 1
-# add this directory (bin) to fish_user_path
-fish_add_path (path resolve (status filename)/..)
+function init
+    set -l fish_variables  $__fish_config_dir/fish_variables
+    cp -v $fish_variables{,-(date --iso-8601=seconds)}; or die "cannot backup $fish_variables"
 
-# add ../vendor_functions.d to fish_function_path
-set -l vendor_functions_d (path resolve (status filename)/../../vendor_functions.d)
-contains -- $vendor_functions_d $fish_function_path; or set -Uxp fish_function_path $vendor_functions_d
+    # TODO: system conf files should do this?
+    # set -eU fish_user_paths
+    fish_add_path --append /usr/local/{s,}bin /usr/{s,}bin /{s,}bin
 
-# add ../vendor_completions.d to fish_complete_path
-set -l vendor_completions_d (path resolve (status filename)/../../vendor_completions.d)
-contains -- $vendor_completions_d $fish_complete_path; or set -Uxp fish_complete_path $vendor_completions_d
+    command -q go; and fish_add_path (go env GOPATH)/bin
+    command -q uv; and fish_add_path ~/.local/share/uv/tools/*/bin
 
-# symlink ../conf.d/fishmonger.conf.fish in $__fish_conf_dir/conf.d
-fishmonger.conf
+    # add this directory (bin) to fish_user_path
+    fish_add_path --prepend (path resolve (status filename)/..)
 
-# -Ux variables
-set -Ux VISUAL emacsclient
-set -Ux EDITOR emacsclient
+    # add ../vendor_functions.d to fish_function_path
+    set -l vendor_functions_d (path resolve (status filename)/../../vendor_functions.d)
+    contains -- $vendor_functions_d $fish_function_path; or set -Uxp fish_function_path $vendor_functions_d
+
+    # add ../vendor_completions.d to fish_complete_path
+    set -l vendor_completions_d (path resolve (status filename)/../../vendor_completions.d)
+    contains -- $vendor_completions_d $fish_complete_path; or set -Uxp fish_complete_path $vendor_completions_d
+
+    # symlink ../vendor_conf.d/fishmonger.conf.fish in $__fish_conf_dir/conf.d
+    fishmonger.conf
+
+    # -Ux variables
+    set -Ux VISUAL emacsclient
+    set -Ux EDITOR emacsclient
+    echo "$(path basename --no-extension $(status filename)) $(status function) succeeded" >&2
+end
+
+function mirror
+    echo "$(status filename) $(status function) $argv" >&2
+end
 
 
+function doctor
+    set -l cmd (path basename (status filename))
+    set -l subcmd (status function)
+    die "$cmd $subcmd  $argv ## not yet implemented"
+    set -l _status 0
+    begin
+        echo "the $cmd $subcmd is in..."
+    end >&2
+    return $_status
+end
+
+
+function call
+    # set -l fish_trace 1
+    if functions -q "$argv[1]"
+        set -f entry "$argv[1]"
+        set -e argv[1]
+    else
+        set -f entry mirror    
+    end
+    # set -s entry argv >&2
+    $entry $argv
+end
+
+call $argv
