@@ -25,8 +25,12 @@ function init
     set -l vendor_completions_d (path resolve (status filename)/../../vendor_completions.d)
     contains -- $vendor_completions_d $fish_complete_path; or set -Uxp fish_complete_path $vendor_completions_d
 
-    # symlink ../vendor_conf.d/fishmonger.conf.fish in $__fish_conf_dir/conf.d
-    fishmonger.conf
+    # create $__fish_config_dir/fishmonger.trawler.fish
+    set -l trawler $__fish_config_dir/fishmonger.trawler.fish
+    if ! [ -r "$trawler" ]
+        echo "# created by $(status filename) on $(date --iso-8680 second)" > "$trawler"
+        echo "fishmonger.trawler ## --vebose" >> "$trawler"
+    end
 
     # -Ux variables
     set -Ux VISUAL emacsclient
