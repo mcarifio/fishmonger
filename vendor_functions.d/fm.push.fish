@@ -12,7 +12,7 @@ function (fn (status filename))
     begin
 	git -C "$C" add ..	     
 	git -C "$C" commit -am "$git_message"
-	git -C "$C" log -n1 >&2
+	git -C "$C" log -n1; echo
 	git -C "$C" push
     end >&2
 end
