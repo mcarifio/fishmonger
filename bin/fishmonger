@@ -20,10 +20,12 @@ function init
     # add ../vendor_functions.d to fish_function_path
     set -l vendor_functions_d (path resolve (status filename)/../../vendor_functions.d)
     contains -- $vendor_functions_d $fish_function_path; or set -Uxp fish_function_path $vendor_functions_d
+    # if you have duplicates, set -Ux fish_function_path $(dedup $fish_function_path)
 
     # add ../vendor_completions.d to fish_complete_path
     set -l vendor_completions_d (path resolve (status filename)/../../vendor_completions.d)
     contains -- $vendor_completions_d $fish_complete_path; or set -Uxp fish_complete_path $vendor_completions_d
+    # if you have duplicates, set -Ux fish_complete__path $(dedup $fish_complete_path)
 
     # create $__fish_config_dir/fishmonger.trawler.fish
     set -l trawler $__fish_config_dir/fishmonger.trawler.fish
@@ -33,8 +35,13 @@ function init
     end
 
     # -Ux variables
-    set -Ux VISUAL emacsclient
-    set -Ux EDITOR emacsclient
+    if command -q emacsclient
+        set -Ux VISUAL emacsclient
+	set -Ux EDITOR emacsclient
+    else if command -q nano
+        set -Ux VISUAL nano
+	set -Ux EDITOR nano
+    end
     echo "$(path basename --no-extension $(status filename)) $(status function) succeeded" >&2
 end
 
