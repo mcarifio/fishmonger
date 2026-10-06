@@ -4,5 +4,5 @@ function (fn (status filename)) -a category
     set -l root (value $argv[2] (zlib+root))
     # TODO: exclude *sort and current
     set -l paths (find $root -type d -name $category)
-    echo $paths[1]
+    echo $paths[-1]
 end

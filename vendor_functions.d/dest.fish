@@ -1,7 +1,5 @@
-function (fn (status filename))
+function (fn (status filename)) -d "$(fn (status filename)) |> directory pathname, materializing it if necessary"
     # @usage: mv -v foo (dest /tmp/foo/bar)/
-
-    # passthru argv_opts to mkdir below
     argparse -us -- $argv
 
     [ -n "$argv[1]" ]; or begin; echo "(status function): expecting a target pathname" >&2; return 1; end
